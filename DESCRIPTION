@@ -1,0 +1,22 @@
+Package: TimeDomainHRV
+Type: Package
+Title: Time Domain Heart Rate Variation 
+Version: 0.1.0
+Author: Authors@R: 
+    person(given = "Molly",
+           family = "Rooyakkers",
+           role = c("aut"),
+           email = "molly.rooyakkers@student.uva.nl",)
+Description: Time-Domain Heart Rate Variability Analysis is one way to analyze and 		
+  interpret heart rate data. Time domain indices quantify the amount of variance in 	
+  the inter-beat-intervals (IBI). It is frequently used across different domains of
+	research, such as medicine, human kinetics, and psychology. Benefits of this 		
+	method	is that the cost of collecting this type of data is relatively low 		
+	compared to other methods and statistical outputs can be compared across 		
+	individuals. This package includes a function to organize the data input, and 		
+	subsequent functions to calculate Time-Domain statistical values. Each value is a 	
+	different way of quantifying the HRV data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
