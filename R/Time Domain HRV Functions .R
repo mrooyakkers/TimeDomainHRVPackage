@@ -32,205 +32,135 @@
 Data_Input <- function (imported_data, input, segment, min, max) {
 
   if (ncol(imported_data) > 2) {
-
     stop("Please upload a csv file containing one column with all RR or MS values.")
-
   }
 
   if (nrow(imported_data) < 10) {
-
     stop("Please enter a larger segment of HRV data.")
-
   }
 
   if (is.numeric(imported_data[ ,1]) == FALSE) {
-
     stop("Please enter numeric data.")
-
   }
 
   if (input == "RR" && segment == FALSE) {
-
     x <- as.data.frame(as.numeric(imported_data[ ,1]))
-
-    # creating a vector that transforms RR values to milliseconds
-
     time_vector <- vector()
-
     for (value in 1:nrow(x)) {
-
       newsum <- sum(x[1:value, ])
-
       time_vector <- append(time_vector, newsum)
-
     }
 
     # transforming millisecond values to minutes
-
     Minutes <- time_vector / 6000
 
     # then add this to existing dataframe, so that the user can index RR values by time
-
     data <- cbind(Minutes, x)
 
   } else if (input == "MS" && segment == FALSE) {
 
     # diff function that takes the differences between each millisecond time point
-
     # turns the data into RR values
-
     RR <- diff(imported_data[ ,1])
-
     x <- as.data.frame(RR)
 
     # creating a vector that transforms RR values to milliseconds
-
     time_vector <- vector()
 
     for (value in 1:nrow(x)) {
-
       newsum <- sum(x[1:value, ])
-
       time_vector <- append(time_vector, newsum)
     }
 
     # millisecond to minutes
-
     Minutes <- time_vector / 6000
 
     # then add this to existing dataframe, so that the user can index time
-
     data <- cbind(Minutes, x)
 
   } else if (input == "RR" && segment == TRUE) {
-
     x <- as.data.frame(imported_data[ ,1])
 
     # create a new vector that converts RR values to time
-
     time_vector <- vector()
 
     for (value in 1:nrow(x)) {
-
       newsum <- sum(x[1:value, ])
-
       time_vector <- append(time_vector, newsum)
     }
 
     # millisecond to minutes
-
     Minutes <- time_vector / 6000
 
     # then add this to existing dataframe, so that the user can index time
-
     df1_plus_time <- cbind(Minutes, x)
 
     # referencing the row number based on the minimum value that the user inputs
-
     min_row <- which(grepl(min, df1_plus_time[ ,1]))
-
     min_row <- min_row[1]
 
     # referencing the row number based on the maximum value that the user inputs
-
     max_row <- which(grepl(max, df1_plus_time[ ,1]))
-
     max_row <- tail(max_row)
-
     max_row <- max_row[6]
 
     # narrowing down the data frame so that it only includes the RR values
-
     # within the user's specified time frame
-
     data <- df1_plus_time[min_row:max_row, 1:2]
 
   } else if (input == "MS" && segment == TRUE) {
-
     RR <- diff(imported_data[ ,1])
-
     x <- as.data.frame(RR)
-
     time_vector <- vector()
 
     for (value in 1:nrow(x)) {
-
       newsum <- sum(x[1:value, ])
-
       time_vector <- append(time_vector, newsum)
-
     }
 
-
     # millisecond to minutes
-
     Minutes <- time_vector / 6000
-
+    
     # then add this to existing dataframe, so that the user can index time
-
     df1_plus_time <- cbind(Minutes, x)
-
-    # referencing the row number based on the minimum value that the user inputs
-
+    
+    # referencing the row number based on the minimum value that the user input
     min_row <- which(grepl(min, df1_plus_time[ ,1]))
-
     min_row <- min_row[1]
-
+    
     # referencing the row number based on the maximum value that the user inputs
-
     max_row <- which(grepl(max, df1_plus_time[ ,1]))
-
     max_row <- tail(max_row)
-
     max_row <- max_row[6]
 
     # narrowing down the data frame so that it only includes the RR values
-
     # within the user's specified time frame
-
     data <- df1_plus_time[min_row:max_row, 1:2]
-
   }
 
-
   # warning messages for incorrect data input
-
   last_minute <- tail(data$Minutes, n = 1)
 
   if (last_minute < .5) {
-
     warning("This software is not appropriate for heart rate
             segments smaller than 30 seconds.")
-
   }
 
   if (segment == TRUE) {
-
     if (min > max) {
-
-      warning("Incorrect min/max values. Max value should exceed min value by
-      
+      warning("Incorrect min/max values. Max value should exceed min value by 
               at least 30 seconds.")
 
     } else if (max - min < 0.5) {
-
       warning("This software is not appropriate for heart rate
-      
             segments smaller than 30 seconds.")
-
     }
     
     if (max > last_minute) {
-      
       warning("Specified max value exceeds the max value in the dataset.")
-      
     }
-
   }
-
-
   return(data)
-
 }
 
 
@@ -247,17 +177,11 @@ Data_Input <- function (imported_data, input, segment, min, max) {
 #' @export
 
 RMSSD  <- function(data) {
-
   input_length <- length(data[,2]) - 1
-
   RR_squared <- data^2
-
   RR_squared_average <- sum(RR_squared) / input_length
-
   rmssd1 <- sqrt(RR_squared_average)
-
   return(rmssd1)
-
 }
 
 
@@ -273,17 +197,11 @@ RMSSD  <- function(data) {
 #' @return Single numeric object
 #' @export
 
-
 SDNN <- function(data) {
-
   last_minute <- tail(data[,1])
-
   last_minute <- last_minute[5]
-
   SDNN <- sd(data[,2])
-
   return(SDNN)
-
 }
 
 
@@ -297,25 +215,15 @@ SDNN <- function(data) {
 #' @return Single numeric object
 #' @export
 
-
 NN50_Count <- function(data = data) {
-
   RR <- data[ ,2]
-
   counter <- 0
-
   for (i in 1:length(RR)) {
-
     if (i > 50) {
-
       counter <- counter + 1
-
     }
-
   }
-
   return(counter)
-
 }
 
 
@@ -333,29 +241,17 @@ NN50_Count <- function(data = data) {
 #' @export
 
 pNN50_Percentage <- function (data) {
-
   RR <- data[,2]
-
   counter <- 0
-
   for (i in 1:length(RR)) {
-
     if (i > 50) {
-
       counter <- counter + 1
-
     }
-
   }
-
   RR_length <- length(RR)
-
   pNN50_Declimal <- counter / RR_length
-
   pNN50_Percent <- pNN50_Declimal %*% 100
-
   return(pNN50_Percent)
-
 }
 
 
@@ -373,19 +269,12 @@ pNN50_Percentage <- function (data) {
 #' @export
 
 Descriptive_HRV <- function (data = data) {
-
   last_minute <- tail(data[,1])
-
   last_minute <- last_minute[5]
-
   RR <- data[ , 2]
-
   min_max_difference <- max(RR) - min(RR)
-
   return <- (list("range", min_max_difference, "mean", mean(RR), "minimum", min(RR), "maximum", max(RR)))
-
   return(return)
-
 }
 
 
@@ -398,23 +287,14 @@ Descriptive_HRV <- function (data = data) {
 #' @export
 
 RR_Plot <- function (data = data) {
-
   plot(data, type = "p", xlab = "Minutes", ylab = "RR Values", col=rgb(0.4,0.4,0.8,0.6), pch=16 , cex=.5)
-
   Minutes <- as.matrix(data[,1])
-
   RR <- as.matrix(data[,2])
-
   reg <- lm(RR ~ Minutes, data = data)
-
   abline(reg, col="red", lwd=1)
-
   minval <- format(round(min(Minutes), 0), nsmall = 0)
-
   maxval <- format(round(max(Minutes), 0), nsmall = 0)
-
   axis(1, at = seq(minval, maxval, by = 1))
-
 }
 
 
